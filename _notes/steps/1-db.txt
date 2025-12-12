@@ -1,0 +1,21 @@
+============
+Database
+============
+
+
+database.py
+---------------
+
+=> 0- Install Packages
+pip install psycopg2-binary sqlalchemy
+
+1=> Connection url => Postgress Url 
+
+
+2=> Create Engine = DB engine
+
+3=> Create Session
+
+4=> Dependency Injection => Create 1 function
+
+

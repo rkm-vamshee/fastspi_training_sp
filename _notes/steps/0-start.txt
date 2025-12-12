@@ -1,0 +1,15 @@
+
+=> Creating Virtual ENV
+python -m venv venv
+
+=> Activate VENV 
+
+
+
+=> install fastapi
+pip install "fastapi[standard]"
+pip list
+pip freeze > requirements.txt
+
+=>Start server 
+fastapi dev 

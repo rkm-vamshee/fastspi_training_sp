@@ -1,0 +1,9 @@
+Day 2 — Signup + Login (JWT)
+* Pydantic schemas
+* Password hashing (bcrypt)
+* Signup API
+
+* Login API
+* JWT token creation
+
+=======

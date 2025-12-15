@@ -7,4 +7,7 @@ class UserCreate(BaseModel):
     email:str
     mobileno:str
     hassedPassword:str
+class LoginReq(BaseModel):
+    email:str
+    password:str
     

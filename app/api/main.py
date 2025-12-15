@@ -1,10 +1,11 @@
 from fastapi import Depends, FastAPI, HTTPException
 
 from core.database import Base,engine, getDB
-from schemas.schemas import UserCreate
+from schemas.schemas import LoginReq, UserCreate
 from models.user_model import User
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
+from jose import jwt, JWTError
 
 Base.metadata.create_all(bind=engine)
 
@@ -51,3 +52,50 @@ def signup(user:UserCreate,db:Session=Depends(getDB) ):
     
     return user
 
+
+def createToken(id:int, name:str):
+    data = {"id":id, "name":name}
+    token = jwt.encode(data,"SECRET",algorithm="HS256")
+    return token
+
+
+
+@app.post('/login')
+def login(req:LoginReq,db:Session=Depends(getDB) ):
+    # Checking Email
+    isUserExists = db.query(User).filter(User.email == req.email).first()
+    if isUserExists is None:
+        raise HTTPException(433, "Email and password invalid")
+    
+    # Compare Password
+    isPasswordValid = bcrypt.verify(req.password, isUserExists.hassedPassword)
+    print(isPasswordValid)
+    if isPasswordValid==False:
+        raise HTTPException(433, "Password invalid")
+    
+    
+    
+    
+    # return req
+    return {"accessToken":createToken(isUserExists.id, isUserExists.firstName), "user":isUserExists}
+
+
+
+
+
+""" 
+API => Stateless applications
+WEB_APP => Stateful applications
+
+API => Stateless applications
+
+TOKEN GENERATION => 
+
+pass through Every Protected API CALL
+
+Need not to pass through Every Public(Unprotected) API CALL
+
+
+
+
+"""

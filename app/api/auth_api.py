@@ -1,38 +1,26 @@
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
-from core.database import Base,engine, getDB
-from schemas.schemas import LoginReq, UserCreate
-from models.user_model import User
+from app.core.database import getDB
+from app.schemas.schemas import LoginReq, UserCreate
+from app.models.user_model import User
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 from jose import jwt, JWTError
 
-Base.metadata.create_all(bind=engine)
 
 bcrypt = CryptContext(schemes=['bcrypt'], deprecated="auto")
 
-app = FastAPI()
+
+router = APIRouter(prefix="/auth", tags=['auth'])
 
 
-@app.get("/")
+@router.get("/")
 def index():
     return "Working fine"
 
 
-
-""" 
-SIGNUP API
-
-
-firstName
-lastName
-mobileno
-email
-hassedPassword=> 123=> skdfjlskdjfslkdf 
-
-"""
-
-@app.post("/signup")
+@router.post("/signup")
 def signup(user:UserCreate,db:Session=Depends(getDB) ):
     
     isUserExists = db.query(User).filter(User.email == user.email).first()
@@ -60,42 +48,40 @@ def createToken(id:int, name:str):
 
 
 
-@app.post('/login')
+@router.post('/login')
 def login(req:LoginReq,db:Session=Depends(getDB) ):
     # Checking Email
     isUserExists = db.query(User).filter(User.email == req.email).first()
     if isUserExists is None:
         raise HTTPException(433, "Email and password invalid")
-    
     # Compare Password
     isPasswordValid = bcrypt.verify(req.password, isUserExists.hassedPassword)
     print(isPasswordValid)
     if isPasswordValid==False:
         raise HTTPException(433, "Password invalid")
-    
-    
-    
-    
-    # return req
     return {"accessToken":createToken(isUserExists.id, isUserExists.firstName), "user":isUserExists}
 
 
+@router.get('/public-data')
+def getPublicData():
+    return "Public data(Not Protected Data)"
 
 
+""" How to protect """
+security = HTTPBearer()
 
-""" 
-API => Stateless applications
-WEB_APP => Stateful applications
+def getCurrentUser(credentials:HTTPAuthorizationCredentials=Depends(security)):
+    token= credentials.credentials
+    try:
+        data = jwt.decode(token, "SECRET",algorithms=["HS256"])
+        return data
+        
+    except JWTError:
+        raise HTTPException(status_code=433, detail="User is invalid")
+    
+    
+@router.get('/userdetails')
+def getUserDetails(user=Depends(getCurrentUser)):
+    return user
+    
 
-API => Stateless applications
-
-TOKEN GENERATION => 
-
-pass through Every Protected API CALL
-
-Need not to pass through Every Public(Unprotected) API CALL
-
-
-
-
-"""

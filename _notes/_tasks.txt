@@ -1,0 +1,53 @@
+FastAPI Authentication - 5 Day Training Schedule
+Day 1 — Project Setup + Database + Folder Structure  => DONE
+• FastAPI installation
+• Virtual environment setup
+• Folder structure creation
+• SQLAlchemy DB connection
+• Users table creation
+
+
+Day 2 — Signup + Login (JWT)   => DONE
+• Pydantic schemas
+• Password hashing (bcrypt)
+• Signup API
+• Login API
+• JWT token creation
+
+
+Day 3 — Google, Facebook, LinkedIn OAuth Login
+• OAuth2 flow understanding
+• Google Login
+• Facebook Login
+• LinkedIn Login
+• Social login auto user creation
+
+
+Day 4 — Email OTP Generation + Verification
+• OTP model and logic
+• Send OTP API
+• Verify OTP API
+• Email verification process
+
+
+Day 5 — Middleware, Token Verification + Final Integration
+• Authentication guard (Depends)
+• Middleware for JWT validation
+• Protecting routes
+• Full testing & documentation => NEED CLARIFICATION
+
+
+===========================================
+Login
+JWT TOKEN GENERATION 
+
+Jwt validation 
+Protecting Routes 
+
+
+app.include_router(auth.router)
+app.include_router(todos.router)
+app.include_router(admin.router)
+app.include_router(users.router)
+
+

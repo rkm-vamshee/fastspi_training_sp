@@ -1,16 +1,18 @@
 from fastapi import FastAPI 
-from app.api import auth_api
-# from core.database import Base,engine
-# from models.user_model import User
+# from app.routers import auth_router
+from app.routers.auth_router import router as authRouter
 
-# Base.metadata.create_all(bind=engine)
+from app.core.database import Base,engine
+from app.models.user_model import User
 
-app = FastAPI(DEBUG=True)
+Base.metadata.create_all(bind=engine)
+
+app = FastAPI()
 
 @app.get("/")
 def test():
     return "Hai"
 
 
-app.include_router(auth_api.router, prefix="/api")
+app.include_router(authRouter, prefix="/api")
 

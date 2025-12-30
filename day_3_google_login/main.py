@@ -8,6 +8,10 @@ from app.models.user_model import User
 
 Base.metadata.create_all(bind=engine)
 
+from dotenv import load_dotenv
+
+load_dotenv() 
+
 app = FastAPI()
 
 @app.get("/")

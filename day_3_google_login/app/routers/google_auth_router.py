@@ -1,5 +1,5 @@
 import os
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from authlib.integrations.starlette_client import OAuth
 from sqlalchemy.orm import Session
 from app.core.database import getDB
@@ -26,13 +26,13 @@ bcrypt = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth.register(
     name="google",
     client_id= os.environ.get("GOOGLE_CLIENT_ID"),
-    client_secret= os.environ.get("GOOGLE_CLIENT_SECRET"),
+    client_secret= os.environ.get("GOOGLE_SECRET_ID"),
     server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
     client_kwargs={"scope": "openid email profile"},
 )
 
-@router.get("/login/google")
-async def google_login(request):
+@router.get("/google/login")
+async def google_login(request:Request):
     return await oauth.google.authorize_redirect(
         request, os.environ.get("GOOGLE_REDIRECT_URI")
     )

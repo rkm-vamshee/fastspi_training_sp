@@ -1,3 +1,4 @@
+import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker,declarative_base
 
@@ -16,9 +17,9 @@ function => injection
 
 
 
-DB_URL="postgresql://postgres:postgres@localhost:5432/myapp_db"
+# DB_URL="postgresql://postgres:postgres@localhost:5432/myapp_db"
 
-engine = create_engine(DB_URL)
+engine = create_engine(os.environ.get("DB_URL"))
 
 SessionLocal=sessionmaker(autoflush=False, autocommit=False, bind=engine)
 

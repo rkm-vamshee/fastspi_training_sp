@@ -1,0 +1,30 @@
+
+Open day3 in vscode 
+
+
+2-Related to VENV
+------------------------
+python -m venv venv
+
+activate venv
+
+
+3-install packages
+----------------------
+
+
+
+4-Run application
+----------------------
+fastapi dev main.py
+
+
+
+5-Test Application 
+----------------------
+Google Login api will not work in Swagger 
+
+Google Login api will not work in Swagger 
+
+
+

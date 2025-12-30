@@ -17,9 +17,10 @@ function => injection
 
 
 
-# DB_URL="postgresql://postgres:postgres@localhost:5432/myapp_db"
+DB_URL="postgresql://postgres:postgres@localhost:5432/myapp_db"
+# DB_URL=os.environ.get("DB_URL")
 
-engine = create_engine(os.environ.get("DB_URL"))
+engine = create_engine(DB_URL)
 
 SessionLocal=sessionmaker(autoflush=False, autocommit=False, bind=engine)
 

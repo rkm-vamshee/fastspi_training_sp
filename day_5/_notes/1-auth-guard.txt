@@ -1,0 +1,52 @@
+🔐 What is an Auth Guard in FastAPI?
+In FastAPI, an Auth Guard is not a built-in keyword.
+
+
+It’s a design pattern where you use Depends() to block or allow access to a route based on authentication or authorization logic.
+
+
+authentication => Login 
+authorization-> Role permissions
+
+
+
+👉 In simple words:
+An Auth Guard is a dependency function that runs before the API logic and decides whether the request is allowed.
+
+🧠 Why It’s Called a “Guard”
+It guards the route
+It runs before the endpoint function
+If authentication fails → request is stopped
+If successful → user data is passed to the route
+
+
+🔄 Flow (How Auth Guard Works)
+Request
+   ↓
+Auth Guard (Depends)
+   ↓
+JWT / Token Validation
+   ↓
+Route Logic Executes
+
+
+If the guard fails → ❌ 403 / 401 returned immediately
+
+get_current_user is the Auth Guard
+
+
+AuthGuard in Local 
+Middleware in Global 
+
+
+🧠 Interview-Ready Definition
+
+An Auth Guard in FastAPI is a dependency function implemented using Depends() that performs authentication or authorization checks before allowing access to an API endpoint.
+
+Key Takeaways
+
+✔ Auth Guard = Dependency
+✔ Runs before route
+✔ Blocks unauthorized users
+✔ Clean & scalable
+✔ Best practice in FastAPI

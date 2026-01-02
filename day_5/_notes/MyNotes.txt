@@ -1,0 +1,19 @@
+Authguard/Protecting                   Middlewares
+-------------------------------------------------------------
+
+=> only for individual routes       - For Total Application
+=> only for Group of routes
+
+Steps:                              Steps:
+Create Guard                        Create Middleware 
+Use of Guard and Get data           Register Middleware
+
+
+
+
+
+
+
+
+
+Authguard                   Middlewares

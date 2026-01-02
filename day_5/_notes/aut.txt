@@ -1,0 +1,122 @@
+Day 5 — Middleware, Token Verification + Final Integration
+• Authentication guard (Depends)
+• Middleware for JWT validation
+• Protecting routes
+
+• Full testing & documentation
+
+
+
+==============================================
+==============================================
+==============================================
+
+Authentication guard (Depends) 
+----------------------------
+Means Protecting routes  => other words called Auth guard
+
+
+Step 1:
+def get_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    token = credentials.credentials
+
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return payload
+
+    except JWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired token",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+
+Step 2:
+@app.get("/profile")
+def profile(user: dict = Depends(get_current_user)):
+    return {
+        "message": "Access granted",
+        "user": user
+    }
+
+
+
+
+
+
+
+
+Middleware for JWT validation
+----------------------------
+
+Auth guard is also 1 Middleware
+Before doing actual action, we will do some checks. 
+    These check may be Role(admin) check/ redirections / permissions check 
+
+When to use middleware?
+    Global protection
+    Logging / audit
+    Not ideal for role-based access
+
+
+Step 1:
+JWT Middleware
+from fastapi import Request
+from starlette.middleware.base import BaseHTTPMiddleware
+
+class JWTMiddleware(BaseHTTPMiddleware):
+
+    async def dispatch(self, request: Request, call_next):
+        if request.url.path in ["/login", "/signup"]:
+            return await call_next(request)
+
+        auth = request.headers.get("Authorization")
+
+        if not auth or not auth.startswith("Bearer "):
+            raise HTTPException(status_code=401, detail="Unauthorized")
+
+        token = auth.split(" ")[1]
+
+        try:
+            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+            request.state.user = payload
+        except JWTError:
+            raise HTTPException(status_code=401, detail="Invalid token")
+
+        return await call_next(request)
+
+
+    Step 2:
+    Register Middleware
+app.add_middleware(JWTMiddleware)
+
+
+
+🔹 Access User in Route
+@app.get("/dashboard")
+def dashboard(request: Request):
+    return request.state.user
+
+
+
+
+
+
+
+Protecting routes
+----------------------------
+
+
+
+
+=============================
+=============================
+
+auth/
+    middlewares.py
+    guards.py
+    jwt.py
+    routes.py

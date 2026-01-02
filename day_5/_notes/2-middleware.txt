@@ -1,0 +1,163 @@
+========================================
+Middleware
+========================================
+========================================
+
+A middleware is code that runs:
+
+BEFORE request → API logic → AFTER response
+
+
+👉 It intercepts every request (or most requests) and can:
+
+Read / modify headers
+
+Validate JWT
+
+Log requests
+
+Add global security
+
+Handle CORS, timing, etc.
+
+🔁 Request Lifecycle
+Client
+  ↓
+Middleware (before)
+  ↓
+Route handler
+  ↓
+Middleware (after)
+  ↓
+Response
+
+
+===========================================
+1. Creating Middleware
+2. Registering Middleware
+
+===========================================
+
+
+
+1️⃣ When Should You Use Middleware?
+
+✅ Use middleware for:
+
+JWT validation (global)
+
+Logging
+
+Request timing
+
+Headers injection
+
+Rate limiting
+
+❌ Don’t use middleware for:
+
+Role-based access
+
+Business logic
+
+Per-route authorization
+👉 Use Depends (Auth Guards) instead.
+
+2️⃣ Create Custom Middleware (Recommended Way)
+===========================================
+Using BaseHTTPMiddleware
+from fastapi import FastAPI, Request
+from starlette.middleware.base import BaseHTTPMiddleware
+
+app = FastAPI()
+
+class SimpleMiddleware(BaseHTTPMiddleware):
+
+    async def dispatch(self, request: Request, call_next):
+        print("➡️ Before request")
+
+        response = await call_next(request)
+
+        print("⬅️ After response")
+        return response
+
+app.add_middleware(SimpleMiddleware)
+
+
+
+
+3️⃣ JWT Validation Middleware (Example)
+===========================================
+
+⚠️ Use only if you want global protection
+
+from fastapi import Request, HTTPException
+from jose import jwt, JWTError
+from starlette.middleware.base import BaseHTTPMiddleware
+
+SECRET_KEY = "SECRET"
+ALGORITHM = "HS256"
+
+class JWTMiddleware(BaseHTTPMiddleware):
+
+    async def dispatch(self, request: Request, call_next):
+
+        if request.url.path in ["/login", "/signup", "/docs", "/openapi.json"]:
+            return await call_next(request)
+
+        auth = request.headers.get("Authorization")
+
+        if not auth or not auth.startswith("Bearer "):
+            raise HTTPException(status_code=401, detail="Unauthorized")
+
+        token = auth.split(" ")[1]
+
+        try:
+            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+            request.state.user = payload
+        except JWTError:
+            raise HTTPException(status_code=401, detail="Invalid token")
+
+        return await call_next(request)
+
+Register it:
+app.add_middleware(JWTMiddleware)
+
+Access user inside route
+@app.get("/dashboard")
+def dashboard(request: Request):
+    return request.state.user
+
+4️⃣ Function-Based Middleware (Simpler)
+=================================================
+
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    print(request.method, request.url)
+    response = await call_next(request)
+    return response
+
+
+✔ Lightweight
+✔ No class needed
+    ===============
+
+7️⃣ Common Mistakes
+
+❌ Raising HTTPException without excluding routes
+❌ Using middleware for role checks
+❌ Blocking Swagger routes
+❌ Heavy DB queries in middleware
+
+🧠 Interview-Ready Definition
+
+Custom middleware in FastAPI is a component that intercepts HTTP requests and responses globally, allowing developers to execute logic before and after route handling, such as authentication, logging, or request modification.
+
+🏆 Best Practices
+
+✔ Use middleware for global concerns
+✔ Use Depends() for authentication
+✔ Keep middleware lightweight
+✔ Always whitelist /docs, /openapi.json
+
+
